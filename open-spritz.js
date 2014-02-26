@@ -9,7 +9,7 @@ var ospritz = ospritz || {
 		var text = sourceElement.text();
 		var trimToWords = function(str)
 		{
-			return str.replace(/^[^a-z]*|[^a-z\n]*$/gi, "");
+			return str.replace(/^[^a-z]*|[^a-z,\n]*$/gi, "");
 		};
 		var removeRepeatedGaps = function(a, b, index, arr)
 		{
@@ -87,7 +87,7 @@ var ospritz = ospritz || {
 
 		var readWordsStartingAt = function(index)
 		{
-			var padding = words[currentIndex] == "" ? 2.5 : 1;
+			var padding = words[currentIndex] == "" || (words[currentIndex-1] && words[currentIndex-1].slice(-1) == ",") ? 2.5 : 1;
 			clearTimeout(self.timer);
 			self.timer = setTimeout(doNextWord, (60*1000*padding)/wpm);
 		};
