@@ -1,0 +1,54 @@
+<html>
+<head>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="open-spritz.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function()
+	{
+		$('#go').on('click', function() {
+			ospritz.init($('#text'), $('#word'), parseInt($('#wpm').val()));
+		});
+	});
+	</script>
+	<style>
+	#word {
+		height: 40px;
+		font-size: 26px;
+	}
+	#word > .container {
+		vertical-align: middle;
+	}
+	.left {
+		width: 100px;
+		display: inline-block;
+	}
+	.left > .text {
+		float: right;
+	}
+	.pivot {
+		color: red;
+	}
+	</style>
+</head>
+<body>
+	<div id="word">
+		<span class="left container"><span class="text"></span></span><span class="pivot container"></span><span class="right container"></span>
+	</div>
+	<input id="wpm" type="text" value="400"></input>(wpm)<button id="go" type="button">Go</button>
+	<hr>
+	<div id="text">
+		<p>Rebekah Brooks has told the phone-hacking trial she did not realise the practice was illegal when she was editor of the News of the World</p>
+		<p>Mrs Brooks said she "didn't think anybody, me included, knew it was illegal".</p>
+
+		<p>She told the Old Bailey she felt "shock and horror" after she discovered murdered schoolgirl Milly Dowler's phone had been hacked.</p>
+
+		<p>Mrs Brooks, one of seven defendants on trial, denies four charges.</p>
+
+		<p>She said she was never asked to sanction the accessing of voicemails for a story during her time as editor of the newspaper.</p>
+
+		<p>"No journalist ever came to me and said 'We're working on so and so a story but we need to access their voicemail and we need to ask for my sanction to do it'," she said.</p>
+
+		<p>"Tell the police," Mrs Brooks said. "I would have assumed probably that they would have told the police before me. If they had not, I would have told them to do so."</p>
+	</div>
+</body>
+</html>
