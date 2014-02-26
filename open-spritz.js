@@ -4,9 +4,8 @@ var ospritz = ospritz || {
 	last: 0,
 	timer: null,
 
-	getWords: function(sourceElement)
+	getWords: function(text)
 	{
-		var text = sourceElement.text();
 		var trimToWords = function(str)
 		{
 			return str.replace(/^[^a-z]*|[^a-z,\n]*$/gi, "");
@@ -96,11 +95,11 @@ var ospritz = ospritz || {
 	},
 
 
-	init: function(sourceElement, outputElement, wpm)
+	init: function(text, outputElement, wpm)
 	{
 		if (!window.jQuery) throw "jQuery Not Loaded";
 		clearTimeout(this.timer);
-		var words = this.getWords(sourceElement);
+		var words = this.getWords(text);
 		this.startSpritzing(words, wpm, outputElement);
 	}
 

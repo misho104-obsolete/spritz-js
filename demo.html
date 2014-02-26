@@ -6,7 +6,7 @@
 	$(document).ready(function()
 	{
 		$('#go').on('click', function() {
-			ospritz.init($('#text'), $('#word'), parseInt($('#wpm').val()));
+			ospritz.init($('#text').val(), $('#word'), parseInt($('#wpm').val()));
 		});
 	});
 	</script>
@@ -28,6 +28,10 @@
 	.pivot {
 		color: red;
 	}
+
+	#text {
+		width: 100%;
+	}
 	</style>
 </head>
 <body>
@@ -36,19 +40,20 @@
 	</div>
 	<input id="wpm" type="text" value="400"></input>(wpm)<button id="go" type="button">Go</button>
 	<hr>
-	<div id="text">
-		<p>Rebekah Brooks has told the phone-hacking trial she did not realise the practice was illegal when she was editor of the News of the World</p>
-		<p>Mrs Brooks said she "didn't think anybody, me included, knew it was illegal".</p>
+	<textarea id="text" rows="15">Rebekah Brooks has told the phone-hacking trial she did not realise the practice was illegal when she was editor of the News of the World
 
-		<p>She told the Old Bailey she felt "shock and horror" after she discovered murdered schoolgirl Milly Dowler's phone had been hacked.</p>
+Mrs Brooks said she "didn't think anybody, me included, knew it was illegal".
 
-		<p>Mrs Brooks, one of seven defendants on trial, denies four charges.</p>
+She told the Old Bailey she felt "shock and horror" after she discovered murdered schoolgirl Milly Dowler's phone had been hacked.
 
-		<p>She said she was never asked to sanction the accessing of voicemails for a story during her time as editor of the newspaper.</p>
+Mrs Brooks, one of seven defendants on trial, denies four charges.
 
-		<p>"No journalist ever came to me and said 'We're working on so and so a story but we need to access their voicemail and we need to ask for my sanction to do it'," she said.</p>
+She said she was never asked to sanction the accessing of voicemails for a story during her time as editor of the newspaper.
 
-		<p>"Tell the police," Mrs Brooks said. "I would have assumed probably that they would have told the police before me. If they had not, I would have told them to do so."</p>
-	</div>
-</body>
-</html>
+"No journalist ever came to me and said 'We're working on so and so a story but we need to access their voicemail and we need to ask for my sanction to do it'," she said.
+
+"Even though I didn't know it was illegal, I absolutely felt it was in the category of a serious breach of privacy."
+
+Mrs Brooks denies conspiring to hack phones, conspiring to commit misconduct in public office, and conspiring to cover up evidence to pervert the course of justice.</textarea>
+	</body>
+	</html>
