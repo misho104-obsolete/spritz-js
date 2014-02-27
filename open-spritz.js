@@ -38,6 +38,7 @@ var ospritz = ospritz || {
 		},
 		outputElement: $(),
 		wpm: 400,
+		timer: {cancel:function(){}},
 
 		init: function(text, wpm, outputElement)
 		{
@@ -173,7 +174,7 @@ var ospritz = ospritz || {
 			this.finishParagraph(); //finished the paragraph
 		} else {
 			var self = this;
-			setTimeout(function() {
+			this.model.timeout = setTimeout(function() {
 				self.spritzSentence(); //do another sentence
 			}, 300);
 		}
@@ -189,7 +190,7 @@ var ospritz = ospritz || {
 			this.finishSpritz(); //finished the spritz
 		} else {
 			var self = this;
-			setTimeout(function() {
+			this.model.timeout = setTimeout(function() {
 				self.spritzParagraph(); //do another paragraph
 			}, 400);
 		}
@@ -202,6 +203,8 @@ var ospritz = ospritz || {
 			sentence: 0,
 			word: 0
 		};
+		
+		this.clearTimers();
 	},
 
 	startSpritzing: function()
@@ -210,9 +213,16 @@ var ospritz = ospritz || {
 		this.spritzParagraph();
 	},
 
+	clearTimers: function()
+	{
+		clearTimeout(this.model.timeout);
+		this.model.timer.cancel();
+	},
+
 	init: function(text, outputElement, wpm)
 	{
 		if (!window.jQuery) throw "jQuery Not Loaded";
+		this.clearTimers();
 		this.model.init(text, wpm, outputElement);
 		this.startSpritzing();
 	}
