@@ -1,24 +1,88 @@
+
+String.prototype.endsWith = String.prototype.endsWith || function(suffix) {
+	return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+window.accurateInterval = function(fn, time) {
+	var cancel, nextAt, timeout, wrapper, _ref;
+	nextAt = new Date().getTime() + time;
+	timeout = null;
+	if (typeof time === 'function') _ref = [time, fn], fn = _ref[0], time = _ref[1];
+	wrapper = function() {
+		nextAt += time;
+		timeout = setTimeout(wrapper, nextAt - new Date().getTime());
+		return fn();
+	};
+	cancel = function() {
+		return clearTimeout(timeout);
+	};
+	delay = function(ms) {
+		nextAt += ms;
+	};
+	timeout = setTimeout(wrapper, nextAt - new Date().getTime());
+	return {
+		cancel: cancel,
+		delay: delay
+	};
+};
+
+
 var ospritz = ospritz || {
 
-	start: 0,
-	last: 0,
-	timer: null,
+	model: {
 
-	getWords: function(text)
-	{
-		var trimToWords = function(str)
+		state: {
+			paragraph: 0,
+			sentence: 0,
+			word: 0
+		},
+		outputElement: $(),
+		wpm: 400,
+
+		init: function(text, wpm, outputElement)
 		{
-			return str.replace(/^[^a-z]*|[^a-z,\n]*$/gi, "");
-		};
-		var removeRepeatedGaps = function(a, b, index, arr)
+			this.data = {
+				text: text,
+				paragraphs: this.getParagraphs(text)
+			};
+			this.wpm = wpm;
+			this.outputElement = outputElement;
+		},
+
+		getParagraphs: function(text)
 		{
-			if(a[a.length-1] != "" && a.length > 0 || b != "")
-			{
-				a.push(b);
+			var map = function(x) {
+				return {
+					text: x, 
+					sentences: this.getSentences(x)
+				};
 			}
-			return a;
-		};
-		return text.split(/[\n\.]+|\s+/g).map(trimToWords).reduce(removeRepeatedGaps,[]);
+			return text.split(/[\n\r]+/g).filter(this.nonEmpty).map(map.bind(this));
+		},
+
+		getSentences:  function(text)
+		{
+			var map = function(x) {
+				return {
+					text: x, 
+					words: this.getWords(x)
+				};
+			}
+			return text.split(/[\.]+/g).filter(this.nonEmpty).map(map.bind(this));
+		},
+
+		getWords:  function(text)
+		{
+			return text.split(/[\s]+/g).filter(this.nonEmpty).map(function(val, index, arr)
+			{
+				return (index == arr.length-1) ? val+"." : val;
+			});
+		},
+
+		nonEmpty: function(x)
+		{
+			return x.length > 0;
+		}
 	},
 
 	splitWord: function(word) 
@@ -29,78 +93,127 @@ var ospritz = ospritz || {
 		{
 			case 0:
 			case 1:
-				pivot = 0;
+			pivot = 0;
 			break;
 			case 2:
 			case 3:
 			case 4:
 			case 5:
-				pivot = 1;
+			pivot = 1;
 			break;
 			case 6:
 			case 7:
 			case 8:
 			case 9:
-				pivot = 2;
+			pivot = 2;
 			break;
 			case 10:
 			case 11:
 			case 12:
 			case 13:
-				pivot = 3;
+			pivot = 3;
 			break;
 			default:
-				pivot = 4;
+			pivot = 4;
 		};
 
 		return [word.substring(0,pivot), word.substring(pivot, pivot+1), word.substring(pivot+1)];
 	},
 
-	drawWord: function(word, outputElement)
+	draw: function(word)
 	{
 		var splitWord = this.splitWord(word);
+		var outputElement = this.model.outputElement;
 		outputElement.find('.left .text').html(splitWord[0]);
 		outputElement.find('.pivot').html(splitWord[1]);
 		outputElement.find('.right').html(splitWord[2]);
 	},
 
-	startSpritzing: function(words, wpm, outputElement)
+	spritzParagraph: function()
 	{
-		var self = this;
-		var currentIndex = 0;
-		var started = Date.now();
-
-		console.log(started);
-
-		var doNextWord = function() {
-			console.log(words[currentIndex]);
-			self.drawWord(words[currentIndex], outputElement)
-			currentIndex++;
-			if(currentIndex == words.length) 
-			{
-				console.log(Date.now());
-				return; //all out of words
-			}
-			readWordsStartingAt(currentIndex);
-		}
-
-		var readWordsStartingAt = function(index)
-		{
-			var padding = words[currentIndex] == "" || (words[currentIndex-1] && words[currentIndex-1].slice(-1) == ",") ? 2.5 : 1;
-			clearTimeout(self.timer);
-			self.timer = setTimeout(doNextWord, (60*1000*padding)/wpm);
-		};
-
-		readWordsStartingAt(0);
+		this.model.state.sentence = 0; // start reading from the first sentence
+		this.spritzSentence();
 	},
 
+	spritzSentence: function()
+	{
+		var self = this;
+		var model = this.model;
+		var state = model.state;
+		var paragraphs = model.data.paragraphs;
+		var sentence = paragraphs[state.paragraph].sentences[state.sentence];
+		state.word = 0; // start reading from the first word
+
+		var doNextWord = function()
+		{
+			if(state.word == sentence.words.length) 
+			{
+				model.timer.cancel();
+				self.finishSentence();
+				return;
+			}
+			var next = sentence.words[state.word+1];
+			if(next && next.endsWith(","))
+			{
+				model.timer.delay(100);
+			}
+			self.draw(sentence.words[state.word]);
+			state.word++;
+		};
+		model.timer = accurateInterval(doNextWord, (60000/model.wpm));
+	},
+
+	finishSentence: function()
+	{
+		var state = this.model.state;
+		var paragraph = this.model.data.paragraphs[state.paragraph];
+		state.sentence++;
+		if(state.sentence == paragraph.sentences.length)
+		{
+			this.finishParagraph(); //finished the paragraph
+		} else {
+			var self = this;
+			setTimeout(function() {
+				self.spritzSentence(); //do another sentence
+			}, 300);
+		}
+	},
+
+	finishParagraph: function()
+	{
+		var state = this.model.state;
+		var paragraphs = this.model.data.paragraphs;
+		state.paragraph++;
+		if(state.paragraph == paragraphs.length)
+		{
+			this.finishSpritz(); //finished the spritz
+		} else {
+			var self = this;
+			setTimeout(function() {
+				self.spritzParagraph(); //do another paragraph
+			}, 400);
+		}
+	},
+
+	finishSpritz: function()
+	{
+		this.model.state =  {
+			paragraph: 0,
+			sentence: 0,
+			word: 0
+		};
+	},
+
+	startSpritzing: function()
+	{
+		var start = Date.now();
+		this.spritzParagraph();
+	},
 
 	init: function(text, outputElement, wpm)
 	{
 		if (!window.jQuery) throw "jQuery Not Loaded";
-		clearTimeout(this.timer);
-		var words = this.getWords(text);
-		this.startSpritzing(words, wpm, outputElement);
+		this.model.init(text, wpm, outputElement);
+		this.startSpritzing();
 	}
-
 };
