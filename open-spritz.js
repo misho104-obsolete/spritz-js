@@ -222,6 +222,8 @@ var ospritz = ospritz || {
 		};
 		
 		this.clearTimers();
+		this.stopper.toggle();
+		this.starter.toggle();
 	},
 
 	startSpritzing: function(eyecatchCount)
@@ -242,12 +244,6 @@ var ospritz = ospritz || {
 		this.model.timer.cancel();
 	},
 
-	stop: function(e){
-		ospritz.stopper.toggle();
-		ospritz.starter.toggle();
-		ospritz.finishSpritz();
-	},
-
 	init: function(text, outputElement, wpm, stateElement, event)
 	{
 		if (!window.jQuery) throw "jQuery Not Loaded";
@@ -258,7 +254,7 @@ var ospritz = ospritz || {
 		}else{
 			this.stopper = $('<button />').insertAfter(this.starter);
 			this.stopper.html('stop');
-			this.stopper.on('click', this.stop);
+			this.stopper.on('click', function(){ospritz.finishSpritz();});
 		}
 		this.clearTimers();
 		this.model.init(text, outputElement, wpm, stateElement);
