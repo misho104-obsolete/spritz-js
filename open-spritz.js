@@ -219,10 +219,16 @@ var ospritz = ospritz || {
 		this.clearTimers();
 	},
 
-	startSpritzing: function()
+	startSpritzing: function(eyecatchCount)
 	{
-		var start = Date.now();
-		this.spritzParagraph();
+		var count = eyecatchCount || 0;
+		if(count == 0){
+			var start = Date.now();
+			this.spritzParagraph();
+		}else{
+			this.draw(String(count));
+			setTimeout(function(){ospritz.startSpritzing(count-1);},60000/this.model.wpm*2);
+		}
 	},
 
 	clearTimers: function()
@@ -251,6 +257,6 @@ var ospritz = ospritz || {
 		}
 		this.clearTimers();
 		this.model.init(text, outputElement, wpm, stateElement);
-		this.startSpritzing();
+		this.startSpritzing(3);
 	}
 };
