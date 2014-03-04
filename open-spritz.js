@@ -169,6 +169,11 @@ var ospritz = ospritz || {
 			{
 				model.timer.delay(100);
 			}
+			// Delay for lengthy words. TODO: to apply this feature to sentence-head words 
+			if(next && next.length >= 8)
+			{
+				model.timer.delay(60000/model.wpm * (next.length-8)/4);
+			}
 			self.draw(sentence.words[state.word]);
 			self.updateState(state);
 			state.word++;
