@@ -40,7 +40,7 @@ var ospritz = ospritz || {
 		wpm: 400,
 		timer: {cancel:function(){}},
 
-		init: function(text, wpm, outputElement)
+		init: function(text, outputElement, wpm, stateElement)
 		{
 			this.data = {
 				text: text,
@@ -48,6 +48,12 @@ var ospritz = ospritz || {
 			};
 			this.wpm = wpm;
 			this.outputElement = outputElement;
+			this.stateElement = stateElement;
+
+			var p = parseInt(this.stateElement.val().split(".")[0]);
+			if(p > 0){
+				this.state.paragraph = p;
+			}
 		},
 
 		getParagraphs: function(text)
@@ -130,6 +136,11 @@ var ospritz = ospritz || {
 		outputElement.find('.right').html(splitWord[2]);
 	},
 
+	updateState: function(state)
+	{
+		this.model.stateElement.val(state.paragraph + "." + state.sentence + "." + state.word);
+	},
+
 	spritzParagraph: function()
 	{
 		this.model.state.sentence = 0; // start reading from the first sentence
@@ -159,6 +170,7 @@ var ospritz = ospritz || {
 				model.timer.delay(100);
 			}
 			self.draw(sentence.words[state.word]);
+			self.updateState(state);
 			state.word++;
 		};
 		model.timer = accurateInterval(doNextWord, (60000/model.wpm));
@@ -219,11 +231,26 @@ var ospritz = ospritz || {
 		this.model.timer.cancel();
 	},
 
-	init: function(text, outputElement, wpm)
+	stop: function(e){
+		ospritz.stopper.toggle();
+		ospritz.starter.toggle();
+		ospritz.finishSpritz();
+	},
+
+	init: function(text, outputElement, wpm, stateElement, event)
 	{
 		if (!window.jQuery) throw "jQuery Not Loaded";
+		this.starter = $(event.target);
+		this.starter.toggle();
+		if(this.stopper){
+			this.stopper.toggle();
+		}else{
+			this.stopper = $('<button />').insertAfter(this.starter);
+			this.stopper.html('stop');
+			this.stopper.on('click', this.stop);
+		}
 		this.clearTimers();
-		this.model.init(text, wpm, outputElement);
+		this.model.init(text, outputElement, wpm, stateElement);
 		this.startSpritzing();
 	}
 };

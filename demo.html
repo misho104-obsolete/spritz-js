@@ -5,8 +5,8 @@
 	<script type="text/javascript">
 	$(document).ready(function()
 	{
-		$('#go').on('click', function() {
-			ospritz.init($('#text').val(), $('#word'), parseInt($('#wpm').val()));
+		$('#go').on('click', function(e) {
+			ospritz.init($('#text').val(), $('#word'), parseInt($('#wpm').val()), $('#state'), e);
 		});
 	});
 	</script>
@@ -14,6 +14,7 @@
 	#word {
 		height: 40px;
 		font-size: 26px;
+		margin-left: 30%;
 	}
 	#word > .container {
 		vertical-align: middle;
@@ -32,6 +33,9 @@
 	#text {
 		width: 100%;
 	}
+	input {
+		width: 5em;
+	}
 	</style>
 </head>
 <body>
@@ -39,6 +43,7 @@
 		<span class="left container"><span class="text"></span></span><span class="pivot container"></span><span class="right container"></span>
 	</div>
 	<input id="wpm" type="text" value="400"></input>(wpm)<button id="go" type="button">Go</button>
+	<form><input id="state" type="text" /><input type="reset"></form>
 	<hr>
 	<textarea id="text" rows="15">Rebekah Brooks has told the phone-hacking trial she did not realise the practice was illegal when she was editor of the News of the World
 
@@ -56,4 +61,4 @@ She said she was never asked to sanction the accessing of voicemails for a story
 
 Mrs Brooks denies conspiring to hack phones, conspiring to commit misconduct in public office, and conspiring to cover up evidence to pervert the course of justice.</textarea>
 	</body>
-	</html>
+	</html> 
