@@ -6,7 +6,7 @@
 	$(document).ready(function()
 	{
 		$('#go').on('click', function() {
-			ospritz.init($('#text').val(), $('#word'), parseInt($('#wpm').val()));
+			ospritz.init($('#text').val(), $('#word'), parseInt($('#wpm').val(), 10));
 		});
 	});
 	</script>
