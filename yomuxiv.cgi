@@ -6,7 +6,12 @@ def error msg = "generic error"
   exit 0
 end
 
-def get_arxiv_id arxiv
+def get_options query
+  query.split(":")[1..-1]
+end
+
+def get_arxiv_id query
+  arxiv = query.split(":").shift
   if arxiv =~ /^(\d{7})$/
     return get_url("hep-ph/#{arxiv}")
   elsif arxiv =~ /^[a-z-]{4,10}\/\d{7}$/ or arxiv =~ /^\d{4}\.\d{4,6}$/
@@ -30,6 +35,7 @@ def redirect html
 end
 
 arxiv = get_arxiv_id(ENV['QUERY_STRING'])
+options = get_options(ENV['QUERY_STRING'])
 error('invalid code') unless arxiv
 
 html_name = "yomu_#{to_code(arxiv)}.html"
