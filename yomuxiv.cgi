@@ -54,7 +54,7 @@ options = get_options(ENV['QUERY_STRING'])
 error('invalid code') unless arxiv
 
 html_name = "yomu_#{to_code(arxiv)}.html"
-redirect(html_name) if File.exist?(html_name)
+redirect(html_name) if File.exist?(html_name) and not options.include?("reparse")
 
 xget_result = `./xget.sh #{arxiv} 2>/dev/null`
 xget_result.chomp!
