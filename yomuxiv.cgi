@@ -49,6 +49,7 @@ text = yomu.text
 skip = false
 File.open(html_name, "w") do |file|
   File.open("demo.html").each do |paragraph|
+    paragraph.gsub!(/<<<ID>>>/, arxiv)
     if begin_tag = paragraph.match(/\A(.*<textarea ([^>]* )?id="text".*?>)/)
       file.write(begin_tag)
       file.write(text)
