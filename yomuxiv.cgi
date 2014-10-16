@@ -34,6 +34,21 @@ def redirect html
   exit 0
 end
 
+def collapse(text)
+  text.gsub!(/\r\n?/, "\n")
+  text.gsub!(/\n\n/,  "\n")
+  text
+end
+
+
+def format(text)
+  text.gsub!(/\r\n?/, "\n")
+  text.gsub!(/(\w{2,})-\n(\w{2,})/, '\1\2')
+  text.gsub!(/([\w,])\n(\w)/, '\1 \2')
+  text
+end
+
+
 arxiv = get_arxiv_id(ENV['QUERY_STRING'])
 options = get_options(ENV['QUERY_STRING'])
 error('invalid code') unless arxiv
@@ -50,7 +65,8 @@ error("File missing") unless File.exist?(xget_result)
 yomu = Yomu.new(xget_result)
 text = yomu.text
 
-
+text = collapse(text) if options.include?("collapse")
+text = format(text)
 
 skip = false
 File.open(html_name, "w") do |file|
