@@ -29,7 +29,7 @@ if [ ! -z $url ]; then
       echo "RETRY"
       exit
     else
-      /bin/mv $file.pdf /var/tmp
+      /bin/mv -f $file.pdf /var/tmp
       echo /var/tmp/$file.pdf
       exit
     fi
