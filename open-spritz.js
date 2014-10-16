@@ -189,7 +189,7 @@ var ospritz = ospritz || {
             var self = this;
             this.model.timeout = setTimeout(function () {
                 self.spritzParagraph(); //do another paragraph
-            }, 400);
+            }, 1000);
         }
     },
 
