@@ -18,6 +18,10 @@ if [ ! -z $url ]; then
   if [ `echo $file | egrep '^\d{7}'` ]; then
     file="hep-ph$file"
   fi
+  if [ -s /var/tmp/$file.pdf ]; then
+    echo /var/tmp/$file.pdf
+    exit
+  fi
   wget http://jp.arxiv.org/pdf/$url -U Mozilla -O $file.pdf
   if [ -s $file.pdf ]; then
     if head -1 $file.pdf | grep '<?xml' > /dev/null; then
